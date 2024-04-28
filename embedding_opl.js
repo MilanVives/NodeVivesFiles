@@ -14,16 +14,13 @@ const Author = mongoose.model('Author', authorSchema);
 
 const Course = mongoose.model('Course', new mongoose.Schema({
   name: String,
-  author: {
-    type: authorSchema,
-    required: true
-  }
+  authors: [authorSchema]
 }));
 
-async function createCourse(name, author) {
+async function createCourse(name, authors) {
   const course = new Course({
     name, 
-    author
+    authors
   }); 
   
   const result = await course.save();
@@ -41,15 +38,54 @@ async function updateAuthor(courseId){
   course.save();
 }
 
-//Update first method
-async function updateAuthor2(courseId){
-    await Course.updateOne({_id: courseId}, {
-      $set: {    //unset 'author.name: '' to remove author property
-        'author.name' : 'New Name'
+
+async function updateAuthor(courseId){
+  const course = await Course.findByIdAndUpdate({
+    _id: courseId}, {
+      $set: {
+        'author.name': 'Vives'
       }
-    });
+    })
 }
 
-//createCourse('Node Course', new Author({ name: 'Vives' }));
-//updateAuthor('6276e8ca976fc098440a9a9a');
-updateAuthor2('6276e8ca976fc098440a9a9a');
+async function addAuthor(courseId, author) {
+  const course = await Course.findById(courseId);
+  course.authors.push(author);
+  course.save()
+
+}
+
+async function removeAuthor(courseId, authorId){
+  const course = await Course.findById(courseId);
+  const index = course.authors.findIndex((obj) => obj._id == authorId);
+  course.authors.splice(index, 1);
+  course.save();  
+}
+
+/* OLD WAY TO REMOVE AUTHOR
+
+async function removeAuthor(courseId, authorId){
+    const course = await Course.findById(courseId);
+    const author = course.authors.id(authorId);
+    author.remove();
+    course.save();   //Opgelet vorige versies author.save()
+}
+*/
+
+
+
+//Variables for courses
+const courseName = 'Node Course';
+const authors= [ new Author({ name: 'Vives' }), new Author({ name: 'M. DIma'})]
+/*
+createCourse(courseName, authors);
+*/
+
+
+//Variables for update, add and remove Author
+const courseId = '';
+const authorId = '';
+
+//updateAuthor('courseId');
+//addAuthor('courseId', new Author({name: 'test'}))
+//removeAuthor('courseId','authorId');
