@@ -38,12 +38,14 @@ async function createCourse(name, author) {
 async function listCourses() { 
   const courses = await Course
     .find()
-    .select('name');
+    .select('name author');  // 'author' must be selected for populate() to show in output
   console.log(courses);
 }
 
 createAuthor('Vives', 'My bio', 'My Website');
 
-// createCourse('Node Course', 'authorId')
+// Step 1: copy the _id from the output above, paste it below, then uncomment:
+// createCourse('Node Course', 'PASTE_AUTHOR_ID_HERE');
 
+// Step 2: once a course exists, uncomment to list courses:
 // listCourses();
